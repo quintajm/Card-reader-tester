@@ -1,45 +1,33 @@
-#import paho.mqtt.client as mqtt
-import subprocess
 import os
 import time
 from datetime import datetime
 import RPi.GPIO as GPIO
-import threading
-
-GPIO.setmode(GPIO.BOARD)
-#switch = 7
-#GPIO.setup(switch, GPIO.IN)
-#switch2 = 13
-#GPIO.setup(switch2, GPIO.IN)
+import Data_database
  
-# Rpi pin connected to relay ouytput at 734
+# Rpi pin connected to relay output at 734
+GPIO.setmode(GPIO.BOARD)
 read = 40
 GPIO.setup(read, GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
-#GPIO.add_event_detect(read, GPIO.FALLING, callback=log, bouncetime=300)
 
 def log(x):
 	print (x) #Pin 40
 	now = datetime.now() # current date and time
 	date_time = now.strftime("%m/%d/%Y, %H:%M:%S")
-	with open("data.txt",'a+') as file:
-		file.write("Succesful read:LOL")
+	# Record data
+	Data_database.log_data(date_time,"Test", i)
 	print("HIT!!")
-	#remocw add event
-	#time.sleep
-	#add evewnt
 
 def start_test():
-	#while GPIO.input(switch) or GPIO.input(switch2) == 0:
-    # Move forward
-        os.system("python3 CONTROL_backward.py")
-	print("sanity check")
-        os.system("python3 CONTROL_backward.py")
-        time.sleep(5)
-    # If message backward move backward
-        os.system("python3 CONTROL_forward.py")
-        os.system("python3 CONTROL_forward.py")
-        time.sleep(5)
+	# Move forward
+    os.system("python3 CONTROL_backward.py")
+	os.system("python3 CONTROL_backward.py")
+	time.sleep(5)
+	# Move backward
+	os.system("python3 CONTROL_forward.py")
+	os.system("python3 CONTROL_forward.py")
+	time.sleep(5)
 
+# Create interrupt pin to record data
 GPIO.add_event_detect(read, GPIO.FALLING, callback=log, bouncetime=6000)
 i=0
 while True:
